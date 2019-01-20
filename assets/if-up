@@ -1,0 +1,6 @@
+#!/bin/bash
+
+sudo ip link set $IFNAME mtu $MTU up
+
+sudo ip addr add dev $IFNAME 10.10.1.1
+sudo ip route add dev $IFNAME 10.10.0.0/16

@@ -1,0 +1,7 @@
+{
+	"proto":"tcp",
+	"mtu":1500,
+	"ifname":"vpe0",
+	"role":"server",
+	"server":"0.0.0.0:443"
+}
