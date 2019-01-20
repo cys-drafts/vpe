@@ -21,9 +21,9 @@ func InsertFDB(b []byte, c *net.TCPConn) {
 	key := mac2key(b)
 	_, ok := fdb[key]
 	if ok {
-		fmt.Printf("fdb for key %v updated to %v\n", b, c)
+		fmt.Printf("fdb for key %v updated to %v\n", b, c.RemoteAddr())
 	} else {
-		fmt.Printf("fdb for key %v inserted to %v\n", b, c)
+		fmt.Printf("fdb for key %v inserted to %v\n", b, c.RemoteAddr())
 	}
 	fdb[key] = c
 }
@@ -33,7 +33,7 @@ func learnFDB(b []byte, c *net.TCPConn) {
 	_, ok := fdb[key]
 	if !ok {
 		fdb[key] = c
-		fmt.Printf("fdb for key %v learned to %v\n", b, c)
+		fmt.Printf("fdb for key %v learned to %v\n", b, c.RemoteAddr())
 	}
 }
 
