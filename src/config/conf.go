@@ -33,26 +33,29 @@ func (c *Conf) String() string {
 	return fmt.Sprintf("role(%d): %s : %d : %s : %s : %s", c.Role, c.Proto, c.Mtu, c.Ifname, c.Ifscript, c.Server)
 }
 
-func parsefile(confname string) (RawConf, error) {
+func parsefile(file string) (RawConf, error) {
 	var rc RawConf
-	confFile, e := os.Open(confname)
+
+	fp, e := os.Open(file)
 	if e != nil {
 		return rc, e
 	}
-	jsonParser := json.NewDecoder(confFile)
+	defer fp.Close()
+
+	jsonParser := json.NewDecoder(fp)
 	e = jsonParser.Decode(&rc)
 	if e != nil {
 		return rc, e
 	}
+
 	return rc, nil
 }
 
-//~/.config/vpe/ /etc/vpe/
 func Parse() (*Conf, error) {
 	var rc RawConf
 	var e error
 
-	confdir := fmt.Sprintf("%s/.config/vpe", os.Getenv("HOME"))
+	confdir := fmt.Sprintf("%s/.vpe", os.Getenv("HOME"))
 
 	if _, e := os.Stat(confdir); os.IsNotExist(e) {
 		fmt.Printf("no config dir\n")
