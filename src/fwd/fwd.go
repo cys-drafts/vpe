@@ -2,6 +2,7 @@ package fwd
 
 import (
 	"fmt"
+	"net"
 	"encoding/binary"
 	"pkt"
 	"tuntap"
@@ -15,23 +16,24 @@ func mac2key(b []byte) uint64 {
 	return binary.LittleEndian.Uint64(b6)
 }
 
-func InsertFDB(b []byte, s *sock.Sock) {
-	key := mac2key(b)
-	_, ok := fdb[key]
-	if ok {
-		fmt.Printf("fdb for key %v updated to %v\n", b, s)
-	} else {
-		fmt.Printf("fdb for key %v inserted to %v\n", b, s)
+func addrEqual(a1, a2 net.Addr) bool {
+	if a1.Network() != a2.Network() || a1.String() != a2.String() {
+		return false
 	}
-	fdb[key] = s
+	return true
 }
 
-func learnFDB(b []byte, s *sock.Sock) {
+func LearnFDB(b []byte, s *sock.Sock) {
 	key := mac2key(b)
-	_, ok := fdb[key]
+	val, ok := fdb[key]
 	if !ok {
 		fdb[key] = s
 		fmt.Printf("fdb for key %v learned to %v\n", b, s)
+	} else {
+		if s.Conn != val.Conn || !addrEqual(s.Peer, val.Peer) {
+			fdb[key] = s
+			fmt.Printf("fdb for key %v updated to %v\n", b, s)
+		}
 	}
 }
 
@@ -93,7 +95,7 @@ func Fwd2Local(c interface{}, tap *tuntap.Tap) {
 			s.Close()
 			break
 		}
-		learnFDB(b[6:12], &sock.Sock{Conn:c, Peer: peer})
+		LearnFDB(b[6:12], &sock.Sock{Conn: c, Peer: peer})
 		n, e := tap.Write(b[:plen])
 		if e != nil {
 			fmt.Printf("err 2\n")

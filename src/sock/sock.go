@@ -7,10 +7,10 @@ import (
 
 type Sock struct {
 	Conn interface{}
-	Peer interface{}
+	Peer net.Addr
 }
 
-func (s *Sock) Read(b []byte) (int, interface{}, error) {
+func (s *Sock) Read(b []byte) (int, net.Addr, error) {
 	switch s.Conn.(type) {
 		case *net.TCPConn:
 			ts := s.Conn.(*net.TCPConn)

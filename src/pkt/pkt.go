@@ -11,7 +11,7 @@ type pktfmt struct {
 	Len uint32
 }
 
-func Read(b []byte, s *sock.Sock) (int, interface{}, error) {
+func Read(b []byte, s *sock.Sock) (int, net.Addr, error) {
 	switch s.Conn.(type) {
 		case *net.UDPConn:
 			return s.Read(b)

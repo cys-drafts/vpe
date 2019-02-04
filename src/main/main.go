@@ -55,7 +55,7 @@ func main() {
 			return
 		}
 		fmt.Printf("connected to %v\n", conf.Server)
-		fwd.InsertFDB([]byte{0xff,0xff,0xff,0xff,0xff,0xff}, &sock.Sock{Conn:conn, Peer:nil,})
+		fwd.LearnFDB([]byte{0xff,0xff,0xff,0xff,0xff,0xff}, &sock.Sock{Conn:conn, Peer:nil,})
 		fwd.Fwd2Local(conn, tap)
 	}
 }
